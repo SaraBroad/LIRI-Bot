@@ -8,14 +8,8 @@ var keys = require('./keys.js');
 var fs = require('fs');
 
 var spotify = new Spotify(keys.spotify);
-var client = new Twitter(keys.twitter) ({
-    consumer_key: process.env.TWITTER_CONSUMER_KEY,
-    consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
-    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
-  });
+var client = new Twitter(keys.twitter); 
 
-console.log("Hello");
 
 function main(appChoice, userSelection){
     switch (appChoice) {
@@ -32,19 +26,21 @@ function main(appChoice, userSelection){
     break;
 
     case "do-what-it-says":
+    readRandom();
+    break;
     }
 } 
 
 function searchTweets() {
-        var params = {screen_name: 'nodejs',
+        var params = {screen_name: 'sara06554646',
                       count:20};
         client.get('statuses/user_timeline', params, function(error, tweets, response) {
             if (!error) {
             console.log("The 20 most recent tweets");
             for (var i = 0; i < tweets.length; i++) {
-                console.log("Tweet date: " + tweet[i].created_at);
+                console.log("Tweet date: " + tweets[i].created_at);
                 console.log(tweets[i].text)
-                console.log("------------------------------------")
+                console.log("----------------------------------------------------------------------------")
             }
         }
 });
@@ -52,42 +48,79 @@ function searchTweets() {
 
 
 function searchSpotify(songName) {
+    if (!songName) {
+        var artist = "Ace of Base"
+        songName = "The Sign" 
+    
+    }
+
     spotify.search({ type: 'track', query: songName }, function(err, data) {
         if (err) {
           return console.log('Error occurred: ' + err);
-        } else if (songName) {
+        } 
+        songName = process.argv;
+        console.log(songName);
+
       //if song name is chosen 
-      console.log("artist");
-      console.log("song name");
-      console.log("link preview");
-      console.log("album") 
-        } else {
+    //   console.log("artist");
+    //   console.log("song name");
+    //   console.log(data.tracks.items[0].preview_url);
+    //   console.log("album") 
+      
             //song name is "The Sign" by Ace of Base
-        }
+        // console.log(data);
       });
 }
 
 function searchFlicks(movieName) {
+   
+    var nodeArgs = process.argv;
+    var movieName = "";
+
+    for (var i = 2; i < nodeArgs.length; i++) {
+    if (i > 2 && i < nodeArgs.length) {
+        movieName = movieName + "+" + nodeArgs[i];
+    }
+
+    else {
+        movieName += nodeArgs[i];
+    }
+}
+
+console.log(nodeArgs[3]);
+    
+
+    var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy"
+    console.log(queryUrl);
+
+
+    request(queryUrl, function(error, response, body) {
+
+        // If the request is successful (i.e. if the response status code is 200)
+        if (!error && response.statusCode === 200) {
+      
+          // Parse the body of the site and recover just the imdbRating
+          // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
+        //   console.log("The movie's rating is: " + JSON.parse(body).imdbRating);
+        console.log("Title: " + JSON.parse(body).Title);
+        console.log("Release year: " + JSON.parse(body).Year);
+        console.log("IMDB rating: " + JSON.parse(body).imdbRating);
+        // console.log("Rotten Tomatoes rating: " + JSON.parse(body).Ratings[2].Value);
+        console.log("Production country: " + JSON.parse(body).Country);
+        console.log("Language: " + JSON.parse(body).Language);
+        console.log("Plot: " + JSON.parse(body).Plot);
+        console.log("Actors: " + JSON.parse(body).Actors);
+        }
+      });
+}
+
+function readRandom() {
 
 }
 
 main(process.argv[2], process.argv[3]);
 
 
-// 3. `node liri.js movie-this '<movie name here>'`
-
-//    * This will output the following information to your terminal/bash window:
-
-//      ```
-//        * Title of the movie.
-//        * Year the movie came out.
-//        * IMDB Rating of the movie.
-//        * Rotten Tomatoes Rating of the movie.
-//        * Country where the movie was produced.
-//        * Language of the movie.
-//        * Plot of the movie.
-//        * Actors in the movie.
-//      ```
 
 //    * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
      
