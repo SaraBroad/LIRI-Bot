@@ -8,34 +8,36 @@ var keys = require('./keys.js');
 var fs = require('fs');
 
 var spotify = new Spotify(keys.spotify);
-var client = new Twitter(keys.twitter); 
+var client = new Twitter(keys.twitter);
+var appChoice = process.argv[2];
 
-
-function main(appChoice, userSelection){
+function main() {
     switch (appChoice) {
-    case "my-tweets":
-    searchTweets();
-    break;    
+        case "my-tweets":
+            searchTweets();
+            break;
 
-    case "spotify-this-song":
-    searchSpotify(userSelection);
-    break;
+        case "spotify-this-song":
+            searchSpotify();
+            break;
 
-    case "movie-this":
-    searchFlicks(userSelection);
-    break;
+        case "movie-this":
+            searchFlicks();
+            break;
 
-    case "do-what-it-says":
-    readRandom();
-    break;
+        case "do-what-it-says":
+            readRandom();
+            break;
     }
-} 
+}
 
 function searchTweets() {
-        var params = {screen_name: 'sara06554646',
-                      count:20};
-        client.get('statuses/user_timeline', params, function(error, tweets, response) {
-            if (!error) {
+    var params = {
+        screen_name: 'sara06554646',
+        count: 20
+    };
+    client.get('statuses/user_timeline', params, function (error, tweets, response) {
+        if (!error) {
             console.log("The 20 most recent tweets");
             for (var i = 0; i < tweets.length; i++) {
                 console.log("Tweet date: " + tweets[i].created_at);
@@ -43,99 +45,98 @@ function searchTweets() {
                 console.log("----------------------------------------------------------------------------")
             }
         }
-});
+    });
 }
 
 
-function searchSpotify(songName) {
-    if (!songName) {
-        var artist = "Ace of Base"
-        songName = "The Sign" 
-    
-    }
+function searchSpotify() {
+    var songName = "The Sign";
 
-    spotify.search({ type: 'track', query: songName }, function(err, data) {
+
+    spotify.search({ type: 'track', query: songName }, function (err, data) {
         if (err) {
-          return console.log('Error occurred: ' + err);
-        } 
+            return console.log('Error occurred: ' + err);
+        }
         songName = process.argv;
-        console.log(songName);
+        console.log(data.tracks.items[0]);
 
-      //if song name is chosen 
-    //   console.log("artist");
-    //   console.log("song name");
-    //   console.log(data.tracks.items[0].preview_url);
-    //   console.log("album") 
-      
-            //song name is "The Sign" by Ace of Base
+        //if song name is chosen 
+        //   console.log("artist");
+        //   console.log("song name");
+        //   console.log(data.tracks.items[0].preview_url);
+        //   console.log("album") 
+
+        //song name is "The Sign" by Ace of Base
         // console.log(data);
-      });
+    });
 }
 
-function searchFlicks(movieName) {
-   
+function searchFlicks() {
+
+    var movieName = "Mr.+Nobody";
+
     var nodeArgs = process.argv;
-    var movieName = "";
 
-    for (var i = 2; i < nodeArgs.length; i++) {
-    if (i > 2 && i < nodeArgs.length) {
-        movieName = movieName + "+" + nodeArgs[i];
+    for (var i = 3; i < nodeArgs.length; i++) {
+        if (i > 3) {
+            movieName = movieName + "+" + nodeArgs[i];
+        }
+
+        else {
+            movieName = nodeArgs[i];
+        }
     }
 
-    else {
-        movieName += nodeArgs[i];
-    }
-}
+    console.log(movieName)
 
-console.log(nodeArgs[3]);
-    
 
     var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy"
     console.log(queryUrl);
 
 
-    request(queryUrl, function(error, response, body) {
+    request(queryUrl, function (error, response, body) {
 
         // If the request is successful (i.e. if the response status code is 200)
         if (!error && response.statusCode === 200) {
-      
-          // Parse the body of the site and recover just the imdbRating
-          // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
-        //   console.log("The movie's rating is: " + JSON.parse(body).imdbRating);
-        console.log("Title: " + JSON.parse(body).Title);
-        console.log("Release year: " + JSON.parse(body).Year);
-        console.log("IMDB rating: " + JSON.parse(body).imdbRating);
-        // console.log("Rotten Tomatoes rating: " + JSON.parse(body).Ratings[2].Value);
-        console.log("Production country: " + JSON.parse(body).Country);
-        console.log("Language: " + JSON.parse(body).Language);
-        console.log("Plot: " + JSON.parse(body).Plot);
-        console.log("Actors: " + JSON.parse(body).Actors);
+
+            // Parse the body of the site and recover just the imdbRating
+            // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
+            //   console.log("The movie's rating is: " + JSON.parse(body).imdbRating);
+            console.log("Title: " + JSON.parse(body).Title);
+            console.log("Release year: " + JSON.parse(body).Year);
+            console.log("IMDB rating: " + JSON.parse(body).imdbRating);
+            // console.log("Rotten Tomatoes rating: " + JSON.parse(body).Ratings[2].Value);
+            console.log("Production country: " + JSON.parse(body).Country);
+            console.log("Language: " + JSON.parse(body).Language);
+            console.log("Plot: " + JSON.parse(body).Plot);
+            console.log("Actors: " + JSON.parse(body).Actors);
         }
-      });
+    });
 }
 
 function readRandom() {
 
 }
 
-main(process.argv[2], process.argv[3]);
+// main(process.argv[2], process.argv[3]);
+main();
 
 
 
 //    * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-     
+
 //      * If you haven't watched "Mr. Nobody," then you should: <http://www.imdb.com/title/tt0485947/>
-     
+
 //      * It's on Netflix!
-   
+
 //    * You'll use the request package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You may use `trilogy`.
 
 // 4. `node liri.js do-what-it-says`
-   
+
 //    * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
-     
+
 //      * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
-     
+
 //      * Feel free to change the text in that document to test out the feature for other commands.
 
 // ### BONUS
