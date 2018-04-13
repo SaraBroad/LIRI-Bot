@@ -52,7 +52,11 @@ function searchTweets() {
 function searchSpotify() {
 
     var nodeArgs = process.argv;
-    var songName = "The Sign Ace of Base";
+    // var songName = "The Sign Ace of Base";
+    var songName = "";
+    if(!songName) {
+        songName = "The Sign Ace of Base"
+    }
 
     for (var i = 3; i < nodeArgs.length; i++) {
         if (i > 3) {
@@ -62,6 +66,7 @@ function searchSpotify() {
         else {
             songName = nodeArgs[i];
         }
+        
     }
     spotify.search({ type: 'track', query: songName }, function (err, data) {
         if (err) {
@@ -71,7 +76,7 @@ function searchSpotify() {
         console.log("Song: " + data.tracks.items[0].name);
         console.log("Artist: " + data.tracks.items[0].artists[0].name);
         console.log("Album: " + data.tracks.items[0].album.name);
-        console.log(data.tracks.items[0].preview_url);
+        console.log("Preview song: " + data.tracks.items[0].preview_url);
 
     });
 }
@@ -122,18 +127,13 @@ function readRandom() {
           return console.log(error);
         }
             
-     
         var results = data.split(",");
-      
-    
-        console.log(results);
-      
+        // searchSpotify(results);
+        // searchSpotify(results)
+       searchSpotify(results[0], results[1]);
       });
-      
-
 }
 
-// main(process.argv[2], process.argv[3]);
 main();
 
 
