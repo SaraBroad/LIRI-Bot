@@ -50,24 +50,29 @@ function searchTweets() {
 
 
 function searchSpotify() {
-    var songName = "The Sign";
 
+    var nodeArgs = process.argv;
+    var songName = "The Sign Ace of Base";
 
+    for (var i = 3; i < nodeArgs.length; i++) {
+        if (i > 3) {
+            songName = songName + "+" + nodeArgs[i];
+        }
+
+        else {
+            songName = nodeArgs[i];
+        }
+    }
     spotify.search({ type: 'track', query: songName }, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-        songName = process.argv;
-        console.log(data.tracks.items[0]);
+       
+        console.log("Song: " + data.tracks.items[0].name);
+        console.log("Artist: " + data.tracks.items[0].artists[0].name);
+        console.log("Album: " + data.tracks.items[0].album.name);
+        console.log(data.tracks.items[0].preview_url);
 
-        //if song name is chosen 
-        //   console.log("artist");
-        //   console.log("song name");
-        //   console.log(data.tracks.items[0].preview_url);
-        //   console.log("album") 
-
-        //song name is "The Sign" by Ace of Base
-        // console.log(data);
     });
 }
 
@@ -96,16 +101,12 @@ function searchFlicks() {
 
     request(queryUrl, function (error, response, body) {
 
-        // If the request is successful (i.e. if the response status code is 200)
+      
         if (!error && response.statusCode === 200) {
-
-            // Parse the body of the site and recover just the imdbRating
-            // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
-            //   console.log("The movie's rating is: " + JSON.parse(body).imdbRating);
             console.log("Title: " + JSON.parse(body).Title);
             console.log("Release year: " + JSON.parse(body).Year);
             console.log("IMDB rating: " + JSON.parse(body).imdbRating);
-            // console.log("Rotten Tomatoes rating: " + JSON.parse(body).Ratings[2].Value);
+            console.log("Rotten Tomatoes rating: " + JSON.parse(body).Ratings[2].Value);
             console.log("Production country: " + JSON.parse(body).Country);
             console.log("Language: " + JSON.parse(body).Language);
             console.log("Plot: " + JSON.parse(body).Plot);
@@ -115,6 +116,20 @@ function searchFlicks() {
 }
 
 function readRandom() {
+    fs.readFile("random.txt", "utf8", function(error, data) {
+
+        if (error) {
+          return console.log(error);
+        }
+            
+     
+        var results = data.split(",");
+      
+    
+        console.log(results);
+      
+      });
+      
 
 }
 
