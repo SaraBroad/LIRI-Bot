@@ -49,14 +49,16 @@ function searchTweets() {
 }
 
 
-function searchSpotify() {
+function searchSpotify(songTrack) {
 
     var nodeArgs = process.argv;
     // var songName = "The Sign Ace of Base";
     var songName = "";
-    if(!songName) {
-        songName = "The Sign Ace of Base"
-    }
+    var songName = "The Sign Ace of Base";
+
+    if (songTrack) {
+        songName = songTrack
+    } else {
 
     for (var i = 3; i < nodeArgs.length; i++) {
         if (i > 3) {
@@ -68,6 +70,8 @@ function searchSpotify() {
         }
         
     }
+    }
+   
     spotify.search({ type: 'track', query: songName }, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
@@ -128,9 +132,10 @@ function readRandom() {
         }
             
         var results = data.split(",");
+        console.log(results);
         // searchSpotify(results);
         // searchSpotify(results)
-       searchSpotify(results[0], results[1]);
+        searchSpotify(results[1]);
       });
 }
 
@@ -161,3 +166,4 @@ main();
 // * Make sure you append each command you run to the `log.txt` file. 
 
 // * Do not overwrite your file each time you run a command.
+
